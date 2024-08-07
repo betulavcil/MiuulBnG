@@ -73,7 +73,7 @@ def data_prep(df):
 
 
 def main():
-    listing = pd.read_csv('datasets/listings.csv')
+    listing = pd.read_csv('listings.csv')
 
     listing = listing[
         ['id', 'price', 'name', 'listing_url', 'minimum_nights', 'maximum_nights','host_is_superhost',

@@ -94,8 +94,8 @@ def data_prep(df):
 
 def main(name):
 
-    listing_detail = pd.read_csv('datasets/listings.csv')
-    reviews_comment = pd.read_csv('datasets/reviews.csv')
+    listing_detail = pd.read_csv('listings.csv')
+    reviews_comment = pd.read_csv('reviews.csv')
 
     listing_detail = listing_detail.rename(columns={'id': 'listing_id'})
     df = reviews_comment.merge(listing_detail, how="left", on="listing_id")

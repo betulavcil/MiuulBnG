@@ -47,7 +47,7 @@ def get_top_superhosts(df, top_n=10):
 
 def main():
     # Veri setinizi oku
-    listing = pd.read_csv('datasets/listings.csv')
+    listing = pd.read_csv('listings.csv')
 
     # Gereken sütunları seç
     listing = listing[['id', 'price', 'name', 'host_id', 'host_url', 'listing_url', 'host_name', 'host_since',
