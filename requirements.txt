@@ -1,8 +1,0 @@
-joblib
-numpy
-pandas
-streamlit
-scikit_learn
-gensim
-
-
