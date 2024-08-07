@@ -3,5 +3,7 @@ joblib
 pandas
 numpy
 scikit-learn
+gensim
+
 
 

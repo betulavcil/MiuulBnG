@@ -76,7 +76,7 @@ def data_prep(df):
 
 
 def main():
-    listing = pd.read_csv('datasets/listings.csv')
+    listing = pd.read_csv('listings.csv')
     df = listing.copy()
     df = df[
         ['id', 'name','listing_url','description', 'neighbourhood_cleansed', 'property_type', 'price',
