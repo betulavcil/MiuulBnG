@@ -5,7 +5,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import RandomizedSearchCV, cross_val_score
 from catboost import CatBoostRegressor
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
-
 from sklearn.exceptions import ConvergenceWarning
 import warnings
 
@@ -65,9 +64,6 @@ def grab_col_names(dataframe, cat_th=10, car_th=20):
 
         """
 
-    # cat_cols, cat_but_car
-    # num_cols = [col for col in df.columns if df[col].dtype != "O"]
-    # num_but_cat = [col for col in num_cols if df[col].nunique() < 10]
 
     cat_cols = [col for col in dataframe.columns if dataframe[col].dtypes == "O"]
     num_but_cat = [col for col in dataframe.columns if dataframe[col].nunique() < cat_th and
@@ -236,57 +232,6 @@ def amsterdam_data_prep(awd_df):
     # Sadece property_count değişkenine uygulama
     awd_df = replace_with_other(awd_df, 'property_type', categories_to_replace)
 
-    """
-       # awd_df['combine_beds_bedrooms_acommodates'] = awd_df['beds'] + awd_df['bedrooms'] + awd_df['accommodates']
-        # awd_df.drop(['beds', 'bedrooms', 'accommodates'], axis=1, inplace=True)
-
-
-       # awd_df['calendar_last_scraped'] = pd.to_datetime(awd_df['calendar_last_scraped'], errors='coerce')
-
-        # property_type' ı kategorilere göre gruplama
-        property_type_counts = awd_df['property_type'].value_counts()
-        property_type_counts[property_type_counts < 11].index
-
-
-        ent_rent_unit_types = set(list(set(col for col in awd_df['property_type'].values if 'Entire rental unit' in col)))
-        ent_condo_types = set(list(set(col for col in awd_df['property_type'].values if 'Entire condo' in col)))
-        ent_home_types = set(list(set(col for col in awd_df['property_type'].values if 'Entire home' in col)))
-
-        # 'Entire' içeren türler (belirtilen türler hariç)
-        entire_types = set(col for col in awd_df['property_type'].values if 'Entire' in col)
-        entire_types = entire_types - (ent_rent_unit_types | ent_condo_types | ent_home_types)
-
-        private_types = list(set(col for col in awd_df['property_type'].values if 'Private' in col))
-        shared_types = list(set(col for col in awd_df['property_type'].values if 'Shared' in col))
-        room_in_types = list(set(col for col in awd_df['property_type'].values if 'Room in' in col))
-        other_types = list(set([col for col in awd_df['property_type'].values if (col not in ent_rent_unit_types) and (col not in ent_condo_types) and (col not in ent_home_types) and\
-                                (col not in entire_types)and (col not in private_types) and (col not in shared_types) and (col not in room_in_types)]))
-        categories = {
-            'Entire rental unit': ent_rent_unit_types,
-            'Entire condo':ent_condo_types,
-            'Entire home' : ent_home_types,
-            'Entire Units': entire_types,
-            'Private Rooms': private_types,
-            'Shared Rooms': shared_types,
-            'Room in': room_in_types,
-            'Other': other_types
-        }
-
-        def categorize(property_type):
-            for category, values in categories.items():
-                if property_type in values:
-                    return category
-            return 'Unknown'
-
-        # `property_type`'ı kategorilere ayırma
-        awd_df['property_type_category'] = awd_df['property_type'].apply(categorize)
-
-        awd_df = awd_df.drop('property_type', axis=1)
-    """
-
-    # review sütunlarındaki null değer sayısı 0' dan büyük olan kayıtları silelim
-    # rev_cols = [col for col in awd_df.columns if awd_df[col].isnull().sum() > 0 and 'review' in col]
-    # awd_df = awd_df.dropna(subset=rev_cols)
 
     # Önem düzeyine sahip review değişkenlerini ağırlıklandırıp genel bir score değişkeni oluşturalım
     weights = {
@@ -307,7 +252,6 @@ def amsterdam_data_prep(awd_df):
 
     awd_df['general_score'] = calculate_weighted_score(awd_df, weights)
 
-    rev_del = ['review_scores_rating', 'review_scores_communication', 'review_scores_location']
     awd_df = awd_df.drop(['review_scores_rating', 'review_scores_communication', 'review_scores_location'], axis=1)
 
     model_df = awd_df[['host_is_superhost', 'accommodates', 'bathrooms', 'bedrooms', 'beds',
