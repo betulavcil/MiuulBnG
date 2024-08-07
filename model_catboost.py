@@ -318,7 +318,7 @@ def catboost_model(X, y):
 
 
 def main():
-    amsterdam_list = pd.read_csv("datasets/listings.csv")
+    amsterdam_list = pd.read_csv("listings.csv")
 
     df = amsterdam_list.drop(
         ['listing_url', 'name', 'description', 'calendar_updated', 'latitude', 'longitude', 'last_scraped', 'scrape_id',

@@ -10,7 +10,7 @@ st.set_page_config(layout='wide', page_title='Miuulbnb', page_icon='🏘️')
 
 @st.cache_data
 def get_data():
-    dataframe = pd.read_csv('datasets/listings.csv')
+    dataframe = pd.read_csv('listings.csv')
     return dataframe
 
 @st.cache_data
