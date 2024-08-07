@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from gensim import utils, models
+
 from sklearn.metrics.pairwise import cosine_similarity
 from gensim.models import Word2Vec
 from gensim.utils import simple_preprocess

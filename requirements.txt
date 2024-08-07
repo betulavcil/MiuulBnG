@@ -4,5 +4,6 @@ joblib
 numpy
 pandas
 scikit-learn
-gensim
+
+
 

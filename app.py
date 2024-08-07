@@ -35,12 +35,6 @@ def get_top():
     top = joblib.load('top_10_scores.pkl')
     return top
 
-@st.cache_data
-def get_model():
-    new_model = joblib.load("final_model.pkl")
-    return new_model
-
-
 
 
 df = get_data()
@@ -49,7 +43,6 @@ superhost = get_superhost()
 comment = get_comment()
 top_10 = get_top()
 
-new_model = get_model()
 
 
 
@@ -193,9 +186,6 @@ class RecommenderApp:
 
 warning_icon = "👉🏻 🧘🏻‍♀️🧘🏻‍♂️️"
 
-
-
-#####################################################################
 
 col6.write('')
 col6.write('')
