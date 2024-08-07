@@ -3,7 +3,82 @@ import pandas as pd
 import joblib
 
 
-from content_based import content_based_recommender_Word2Vec, calculate_cosine_sim_Word2Vec, data_prep
+#from content_based import content_based_recommender_Word2Vec, calculate_cosine_sim_Word2Vec, data_prep
+
+
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from gensim.models import Word2Vec
+from gensim.utils import simple_preprocess
+
+# Benzerlik için Word2Vec yöntemi kullanıldı
+def get_vector_w2v(text, model_w2v):
+    words = simple_preprocess(text)
+    word_vectors = [model_w2v.wv[word] for word in words if word in model_w2v.wv]
+    if len(word_vectors) == 0:
+        return np.zeros(model_w2v.vector_size)
+    return np.mean(word_vectors, axis=0)
+
+
+def calculate_cosine_sim_Word2Vec(dataframe):
+    texts_w2v = dataframe['description'].apply(simple_preprocess).tolist()
+    model_w2v = Word2Vec(sentences=texts_w2v, vector_size=100, window=5, min_count=1, workers=4)
+    dataframe['vector_w2v'] = dataframe['description'].apply(lambda x: get_vector_w2v(x, model_w2v))
+    vectors_w2v = np.array(dataframe['vector_w2v'].tolist())
+    cosine_sim_w2v = cosine_similarity(vectors_w2v, vectors_w2v)
+    return cosine_sim_w2v, model_w2v
+
+
+def content_based_recommender_Word2Vec(title, price, cosine_sim_w2v, dataframe):
+    if title not in dataframe['name'].values:
+        return "Title not found in the dataset"
+
+    # Kullanıcının seçtiği fiyat aralığına göre filtreleme yapın
+    bins = [0, 9, 100, 200, 300, float('inf')]
+    labels = ['0-9', '10-100', '100-200', '200-300', '300+']
+    user_label = pd.cut([price], bins=bins, labels=labels)[0]
+    dataframe['price_range'] = pd.cut(dataframe['price'], bins=bins, labels=labels)
+    filtered_df = dataframe[dataframe['price_range'] == user_label]
+
+    if filtered_df.empty:
+        return "Otur evinde be yaaa!!"
+
+    # Filtrelenmiş dataframe için indeksleme yapın
+    property_index_w2v = filtered_df[filtered_df['name'] == title].index
+    if len(property_index_w2v) == 0:
+        return "Bu fiyata böyle bir ev yok!"
+    property_index_w2v = property_index_w2v[0]
+
+    similarity_scores_w2v = pd.DataFrame(cosine_sim_w2v[property_index_w2v], columns=["score"])
+    similarity_scores_w2v = similarity_scores_w2v.sort_values(by='score', ascending=False)
+    listing_indices_w2v = similarity_scores_w2v.index
+
+    # Filtrelenmiş df'deki geçerli indekslere göre sonuçları al
+    valid_indices = [idx for idx in listing_indices_w2v if idx < len(filtered_df)]
+    if not valid_indices:
+        return "No valid recommendations found."
+
+
+    recommendations = filtered_df.iloc[valid_indices][['name', 'listing_url', 'price']].head(12)
+    return recommendations
+
+
+
+# Veri Ön Hazırlık
+def data_prep(df):
+    df['price'] = df['price'].replace({r'^\$': '', r',': ''}, regex=True).astype(float)
+    df['price'] = (df.groupby(['neighbourhood_cleansed'])['price']
+                   .transform(lambda x: x.replace(0, np.nan).fillna(x.mean()).replace(np.nan, 0)))
+
+    df['description'] = df['description'].fillna('No description')
+    df['has_availability'] = df['has_availability'].fillna('f')
+    return df
+
+
+
+
+
+
 
 
 st.set_page_config(layout='wide', page_title='Miuulbnb', page_icon='🏘️')
