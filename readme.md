@@ -25,3 +25,5 @@ Veriseti linki:  https://insideairbnb.com/get-the-data/
 
 
 
+**Not:** .py dosyalarımız pyton dosyasında yazdığımız modelleri, .pkl dosyalarımız ise geliştirdiğimiz modelleri göstermektedir.
+.pkl dosyalarını streamlit ile uygulamamızı canlıya alırken kullanabilmek için joblib kütüphanesi ile oluşturduk.
